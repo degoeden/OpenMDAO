@@ -713,7 +713,7 @@ class GeneticAlgorithm(object):
         nfit = 0
         generation = 0
         evolution = True
-        stagnation = 0
+        fopt_history = []
         while generation <= max_gen + 1 and evolution:
             old_gen = copy.deepcopy(new_gen)
             x_pop = self.decode(old_gen, vlb, vub, bits)
@@ -791,16 +791,18 @@ class GeneticAlgorithm(object):
                 min_x = x_pop[min_index]
 
                 if min_fit < fopt:
-                    if fopt - fopt*tol < min_fit: stagnation+=1
-                    else: stagnation = 0
                     fopt = min_fit
                     xopt = min_x
-                else: stagnation+=1
 
-                if stagnation > patience:
-                    evolution = False
+                
+                # Update fopt_history
+                fopt_history.append(fopt)
+                if len(fopt_history) > patience+1:
+                    fopt_history.pop(0)
+                    # Check if we are still evolving
+                    if (fopt_history[-1]-fopt_history[0])/fopt_history[0]<tol: evolution = False
+
             # Evolve new generation.
-
             if nobj > 1:
                 new_gen, new_obj = self.tournament_multi_obj(old_gen, fitness)
             else:
