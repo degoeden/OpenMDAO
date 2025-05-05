@@ -800,7 +800,7 @@ class GeneticAlgorithm(object):
                 if len(fopt_history) > patience+1:
                     fopt_history.pop(0)
                     # Check if we are still evolving
-                    if (fopt_history[-1]-fopt_history[0])/fopt_history[0]<tol: evolution = False
+                    if abs(fopt_history[-1]-fopt_history[0])/abs(fopt_history[0]) < tol: evolution = False
 
             # Evolve new generation.
             if nobj > 1:
